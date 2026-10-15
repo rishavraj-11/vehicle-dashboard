@@ -1,107 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engine Intelligence</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Intelligence</title>
+  <link rel="stylesheet" href="/static/style.css?v=4">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <main class="container">
-        <header>
-            <p class="eyebrow">MACHINE INTELLIGENCE / 01</p>
-            <h1>Engine Condition</h1>
-            <p class="subtitle">
-                Enter sensor readings to predict engine condition.
-            </p>
-        </header>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-icon">V</span><div><b>VeloSense</b><small>VEHICLE INTELLIGENCE</small></div></div>
+    <nav>
+      <a class="active" href="#overview">▦ <span>Overview</span></a>
+      <a href="#sensors">◉ <span>Live sensors</span></a>
+      <a href="#maintenance">▣ <span>Maintenance</span></a>
+      <a href="#alerts">♧ <span>Alerts</span></a>
+    </nav>
+    <div class="sidebar-bottom"><span class="pulse"></span> Simulation running<small>Local prototype</small></div>
+  </aside>
 
-        <form id="sensor-form">
-            <h2>Sensor Readings</h2>
+  <main class="main" id="overview">
+    <header class="topbar">
+      <div><p class="eyebrow">VEHICLE MANAGEMENT / OVERVIEW</p><h1>Vehicle dashboard</h1><p class="muted">Monitor condition, review alerts and plan maintenance.</p></div>
+      <div class="top-actions"><span class="demo-badge">● SIMULATED DATA</span><button id="refreshBtn" class="secondary">Update readings ↻</button></div>
+    </header>
 
-            <div class="grid">
-                <label>Vibration Amplitude (mm/s²)
-                <input name="Vibration_Amplitude"
-                    type="number" min="0.1" max="10"
-                    step="any" placeholder="0.1 – 10.0" required>
-            </label>
+    <section class="vehicle-banner">
+      <div class="car-symbol">🚘</div>
+      <div class="vehicle-title"><span class="muted">CURRENT VEHICLE</span><h2 id="vehicleName">Demo vehicle · Prototype</h2><p id="vehicleMeta">2022 · Petrol · 48,000 km</p></div>
+      <div class="vehicle-status"><span class="status-dot"></span><div><b>Connected</b><small id="updatedAt">Waiting for data…</small></div></div>
+    </section>
 
-            <label>RMS Vibration (mm/s²)
-                <input name="RMS_Vibration"
-                    type="number" min="0.05" max="5"
-                    step="any" placeholder="0.05 – 5.0" required>
-            </label>
+    <section class="metrics">
+      <article class="metric-card"><div class="metric-head"><span>Vehicle health</span><span class="metric-icon green">♥</span></div><div class="metric-value"><strong id="healthScore">—</strong><span>/100</span></div><div class="progress"><div id="healthBar" class="progress-fill green-fill" style="width:0%"></div></div><small class="muted">Demo score, not a diagnostic guarantee</small></article>
+      <article class="metric-card"><div class="metric-head"><span>Engine condition</span><span class="metric-icon blue">⌁</span></div><div class="metric-value compact"><strong id="engineCondition">Loading…</strong></div><small id="engineNote" class="muted">Using saved model if available</small></article>
+      <article class="metric-card"><div class="metric-head"><span>Odometer</span><span class="metric-icon purple">↗</span></div><div class="metric-value"><strong id="mileage">48,000</strong><span>km</span></div><small class="muted">Simulated mileage</small></article>
+      <article class="metric-card"><div class="metric-head"><span>Upcoming service</span><span class="metric-icon amber">◷</span></div><div class="metric-value compact"><strong id="nextService">500 km</strong></div><small class="muted">Based on demo schedule</small></article>
+    </section>
 
-            <label>Vibration Frequency (Hz)
-                <input name="Vibration_Frequency"
-                    type="number" min="20" max="2000"
-                    step="any" placeholder="20 – 2000" required>
-            </label>
+    <section class="two-col">
+      <article class="panel" id="sensors">
+        <div class="panel-heading"><div><h3>Live sensor readings</h3><p class="muted">Values stay fixed until you tap Update readings</p></div><span class="live-tag"><i></i> LIVE DEMO</span></div>
+        <div class="sensor-grid">
+          <div class="sensor"><span>Engine RPM</span><b id="rpm">—</b><small>rpm</small></div>
+          <div class="sensor"><span>Coolant temperature</span><b id="coolant">—</b><small>°C</small></div>
+          <div class="sensor"><span>Battery voltage</span><b id="battery">—</b><small>V</small></div>
+          <div class="sensor"><span>Vehicle speed</span><b id="speed">—</b><small>km/h</small></div>
+          <div class="sensor"><span>Vibration RMS</span><b id="vibration">—</b><small>mm/s² · dataset unit</small></div>
+          <div class="sensor"><span>Exhaust temperature</span><b id="exhaust">—</b><small>°C · model input</small></div>
+        </div>
+      </article>
+      <article class="panel">
+        <div class="panel-heading"><div><h3>Sensor trends</h3><p class="muted">Recent saved readings</p></div></div>
+        <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+      </article>
+    </section>
 
-            <label>Surface Temperature (°C)
-                <input name="Surface_Temperature"
-                    type="number" min="30" max="150"
-                    step="any" placeholder="30 – 150" required>
-            </label>
-
-            <label>Exhaust Temperature (°C)
-                <input name="Exhaust_Temperature"
-                    type="number" min="200" max="600"
-                    step="any" placeholder="200 – 600" required>
-            </label>
-
-            <label>Acoustic Level (dB)
-                <input name="Acoustic_dB"
-                    type="number" min="60" max="120"
-                    step="any" placeholder="60 – 120" required>
-            </label>
-
-            <label>Acoustic Frequency (Hz)
-                <input name="Acoustic_Frequency"
-                    type="number" min="100" max="5000"
-                    step="any" placeholder="100 – 5000" required>
-            </label>
-
-            <label>Intake Pressure (kPa)
-                <input name="Intake_Pressure"
-                    type="number" min="90" max="120"
-                    step="any" placeholder="90 – 120" required>
-            </label>
-
-            <label>Exhaust Pressure (kPa)
-                <input name="Exhaust_Pressure"
-                    type="number" min="80" max="110"
-                    step="any" placeholder="80 – 110" required>
-            </label>
-
-            <label>Frequency Band Energy
-                <input name="Frequency_Band_Energy"
-                    type="number" min="0"
-                    step="any" placeholder="Enter energy value" required>
-            </label>
-
-            <label>Amplitude Mean (arbitrary units)
-                <input name="Amplitude_Mean"
-                    type="number" min="0.01" max="0.5"
-                    step="any" placeholder="0.01 – 0.5" required>
-            </label>
-            </div>
-
-            <button id="predict-btn" type="submit">
-                Predict Condition
-            </button>
+    <section class="two-col lower">
+      <article class="panel" id="maintenance">
+        <div class="panel-heading"><div><h3>Maintenance schedule</h3><p class="muted">Mileage-based demo reminders</p></div><span class="count-badge" id="maintenanceCount">0 tasks</span></div>
+        <form id="addMaintenanceForm" class="add-task-form">
+          <input id="newTaskName" type="text" maxlength="120" placeholder="New task (e.g. Tyre inspection)" required>
+          <input id="newTaskMileage" type="number" min="0" max="2000000" placeholder="Due mileage (km)" required>
+          <button type="submit" class="add-task-btn">+ Add task</button>
         </form>
-
-        <section id="result" class="result" hidden aria-live="polite">
-            <p class="eyebrow">MODEL OUTPUT</p>
-            <h2 id="condition">—</h2>
-            <p id="probabilities"></p>
-        </section>
-
-        <p id="message" role="status"></p>
-        <footer>Local Engine Intelligence · ML Prediction</footer>
-    </main>
-
-    <script src="/static/script.js"></script>
+        <div id="maintenanceList" class="maintenance-list"><p class="muted">Loading maintenance…</p></div>
+      </article>
+      <article class="panel" id="alerts">
+        <div class="panel-heading"><div><h3>Alerts & recommendations</h3><p class="muted">Rule-based demo alerts</p></div><span class="count-badge" id="alertCount">0</span></div>
+        <div id="alertList" class="alert-list"><p class="muted">Loading alerts…</p></div>
+        <p class="disclaimer">Demo rules are not validated diagnostic thresholds. Do not use this prototype to decide whether a real vehicle is safe to drive.</p>
+      </article>
+    </section>
+    <footer>VeloSense · Local prototype · Simulated values are not real vehicle measurements</footer>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/static/script.js?v=4"></script>
 </body>
 </html>
